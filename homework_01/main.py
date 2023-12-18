@@ -41,7 +41,7 @@ def filter_numbers(numbers, filter_type):
     [2, 4]
     """
 
-    def FilterFunc(n):
+    def filter_func(n):
         return (filter_type == ODD and n % 2 == 1) or \
                (filter_type == EVEN and n % 2 == 0) or \
                (filter_type == PRIME and is_prime(n))
@@ -49,10 +49,10 @@ def filter_numbers(numbers, filter_type):
     # filter solution
     filter_solution = list(
         filter(
-            lambda n: FilterFunc(n),
+            lambda n: filter_func(n),
             numbers,
     ))
     # list comprehension solution
-    list_comp_result = [n for n in numbers if FilterFunc(n)]
+    list_comp_result = [n for n in numbers if filter_func(n)]
     assert list_comp_result == filter_solution
     return filter_solution
