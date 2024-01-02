@@ -1,3 +1,4 @@
+import pydantic.main
 import pytest
 from faker import Faker
 
@@ -45,5 +46,6 @@ class TestCar:
             module_car.Car,
             module_base.Vehicle,
             module_base.ABC,
+            pydantic.main.BaseModel,
             object,
         ]

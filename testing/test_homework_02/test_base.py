@@ -1,4 +1,5 @@
 import pytest
+from pydantic import ValidationError
 from faker import Faker
 
 fake = Faker()
@@ -30,6 +31,21 @@ class TestVehicle:
         assert vehicle.weight == weight
         assert vehicle.fuel == fuel
         assert vehicle.fuel_consumption == fuel_consumption
+
+        vehicle2 = base.Vehicle(str(weight), fuel, fuel_consumption)
+        assert vehicle2.weight == weight
+        assert vehicle2.fuel == fuel
+        assert vehicle2.fuel_consumption == fuel_consumption
+
+
+    @pytest.mark.parametrize("weight", [
+        pytest.param("not an int", id="value is not convertible to int"),
+    ])
+    def test_fail_to_create_vehicle(self, weight, vehicle):
+        # test pydantic
+        with pytest.raises(ValidationError):
+            vehicle.weight = weight
+
 
     def test_start_ok(self, vehicle):
         assert vehicle.fuel > 0

@@ -1,60 +1,33 @@
 import numbers
+from pydantic import BaseModel, StrictBool, NonNegativeInt
 from abc import ABC
 from homework_02.exceptions import (
     LowFuelError,
     NotEnoughFuel,
 )
 
-class Vehicle(ABC):
+
+class Vehicle(ABC, BaseModel):
+    # force pydantic to validate values on assignment
+    class Config:
+        validate_assignment = True
+
+    weight: NonNegativeInt
+    fuel: NonNegativeInt
+    fuel_consumption: NonNegativeInt
+    started: StrictBool
+
     def __init__(self, weight=0, fuel=0, fuel_consumption=0):
-        self._weight = self._validate_int_value(weight)
-        self._fuel = self._validate_int_value(fuel)
-        self._fuel_consumption = self._validate_int_value(fuel_consumption)
-        self._started = False
-
-    def _validate_int_value(self, value):
-        if isinstance(value, numbers.Integral):
-            return int(value)
-        raise TypeError("number is not integral")
-
-    @property
-    def weight(self):
-        return self._weight
-
-    @weight.setter
-    def weight(self, value):
-        self._weight = self._validate_int_value(value)
-
-    @property
-    def fuel(self):
-        return self._fuel
-
-    @fuel.setter
-    def fuel(self, value):
-        self._fuel = self._validate_int_value(value)
-
-    @property
-    def fuel_consumption(self):
-        return self._fuel_consumption
-
-    @fuel_consumption.setter
-    def fuel_consumption(self, value):
-        self._fuel_consumption = self._validate_int_value(value)
-
-    @property
-    def started(self):
-        return self._started
-
-    @started.setter
-    def started(self, value):
-        self._started = bool(value)
+        # pydantic does not support positional initialization from the box
+        # so need to pass the values of args directly
+        super().__init__(weight=weight, fuel=fuel, fuel_consumption=fuel_consumption, started=False)
 
     def start(self):
-        if not self._started and self._fuel <= 0:
+        if not self.started and self.fuel <= 0:
             raise LowFuelError("low on fuel")
-        self._started = True
+        self.started = True
 
     def move(self, distance):
-        if distance * self._fuel_consumption > self._fuel:
+        if distance * self.fuel_consumption > self.fuel:
             raise NotEnoughFuel
-        self._fuel -= distance * self._fuel_consumption
+        self.fuel -= distance * self.fuel_consumption
