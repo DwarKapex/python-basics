@@ -5,11 +5,14 @@
 - CargoOverload
 """
 
-class LowFuelError(Exception):
+class CarBaseExeption(Exception):
     pass
 
-class NotEnoughFuel(Exception):
+class LowFuelError(CarBaseExeption):
     pass
 
-class CargoOverload(Exception):
+class NotEnoughFuel(CarBaseExeption):
+    pass
+
+class CargoOverload(CarBaseExeption):
     pass
