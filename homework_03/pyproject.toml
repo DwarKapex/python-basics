@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "homework-03"
+version = "0.1.0"
+description = "OTUS Homework 3"
+authors = ["Vladislav Kozlov <vlad.kv.2002@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.109.0"
+uvicorn = "^0.27.0"
+pydantic = "^2.5.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
