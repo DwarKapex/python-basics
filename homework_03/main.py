@@ -16,4 +16,3 @@ def ping():
 @app.get("/greet/")
 def make_greeting(name: str = "Guest"):
     return {"message": f"Hello {name}!"}
-
