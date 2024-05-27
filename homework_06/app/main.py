@@ -1,57 +1,62 @@
-from os import getenv
-
 from flask import Flask, request, render_template
-from flask_migrate import (
-    Migrate,
-    migrate as migrate_command,
-    upgrade as upgrade_command,
-)
-from views.products.views import products_app
+from flask_migrate import Migrate
+
+from views.items import items_app
+from views.products import products_app
+
+import config
 from models import db
 
-
 app = Flask(__name__)
-app.register_blueprint(products_app)
 
-CONFIG_NAME = getenv("CONFIG_NAME", "DevelopmentConfig")
-app.config.from_object(f"config.{CONFIG_NAME}")
+# python -c 'import secrets; print(secrets.token_hex())'
 
+app.config.update(
+    SECRET_KEY="6fc01f2db60feff0f53537060",
+    SQLALCHEMY_DATABASE_URI=config.SQLALCHEMY_DATABASE_URI,
+    SQLALCHEMY_ECHO=config.SQLALCHEMY_ECHO,
+)
+
+app.register_blueprint(
+    items_app,
+)
+app.register_blueprint(
+    products_app,
+)
 db.init_app(app)
 migrate = Migrate(app, db)
 
 
-def create_migration():
-    with app.app_context():
-        migrate_command()
-        # with app.request_context():
-        #     pass
+# with app.app_context():
+#     db.create_all()
 
 
-@app.cli.command("apply-migrations")
-def run_migration():
-    with app.app_context():
-        upgrade_command()
+@app.get("/", endpoint="index")
+def index():
+    return render_template("index.html")
 
 
-@app.route("/", endpoint="index")
-def root():
-    words = ["foo", "bar", "spam", "eggs"]
-    return render_template("index.html", words=words)
+# @app.get("/hello/")
+# def hello_view():
+#     name = request.args.get("name", "")
+#     name = name.strip()
+#     if not name:
+#         name = "World"
+#     # return {"message": "Hello, World!"}
+#     # return jsonify([{"message": "Hello, World!"}])
+#     return jsonify(message=f"Hello, {name}!")
 
 
-@app.get("/hello/")
-def hello_view():
-    name = request.args.get("name", "")
+@app.route("/hello/")
+@app.get("/hello/<name>/")
+def hello_path_view(name: str | None = None):
+    print(request)
+    if name is None:
+        name = request.args.get("name", "")
     name = name.strip()
     if not name:
         name = "World"
-    ids = request.args.getlist("id")
-    return {"message": f"Hello {name}!", "ids": ids}
-
-
-@app.get("/hello/<name>/")
-def hello_path_view(name):
-    return {"message": f"Hello {name}!"}
+    return {"message": f"Hello, {name}!"}
 
 
 if __name__ == "__main__":

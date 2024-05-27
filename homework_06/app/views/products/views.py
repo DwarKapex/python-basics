@@ -1,56 +1,74 @@
 from flask import (
     Blueprint,
-    render_template,
     request,
+    render_template,
     redirect,
-    url_for,
-    flash,
+    url_for, flash,
 )
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, NotFound
 
-from models import Product
+from models import Product, db
 from . import crud
+
 
 products_app = Blueprint(
     "products_app",
     __name__,
-    url_prefix="/products"
+    url_prefix="/products",
 )
 
 
-@products_app.get("/", endpoint="list")
-def get_products_list():
+@products_app.get(
+    "/",
+    endpoint="list",
+)
+def get_products():
     return render_template(
-        "products/index.html",
-        products=crud.get_products_list(),
+        "products/list.html",
+        products=crud.get_products(),
     )
 
 
-@products_app.get("/<int:product_id>/", endpoint="details")
-def get_product_by_id_or_raise(product_id: int):
-    product: Product = crud.get_product_by_id(product_id)
+@products_app.route(
+    "/add/",
+    endpoint="add",
+    methods=["GET", "POST"],
+)
+def create_product():
+    if request.method == "GET":
+        return render_template("products/add.html")
 
+    product_name = request.form.get("product-name", "")
+    product_name = product_name.strip()
+    if not product_name:
+        raise BadRequest("product-name is required!")
+
+    product = crud.create_product(
+        name=product_name,
+    )
+
+    flash(f"Created product {product_name!r}!", category="success")
+    # return {"product": product.name, "id": product.id}
+    url = url_for(
+        "products_app.details",
+        product_id=product.id,
+    )
+    return redirect(url)
+
+
+@products_app.get(
+    "/<int:product_id>/",
+    endpoint="details",
+)
+def get_product_details(product_id: int):
+    product: Product = Product.query.get_or_404(
+        product_id,
+        description=f"Product #{product_id} not found!",
+    )
     return render_template(
         "products/details.html",
         product=product,
     )
-
-
-@products_app.route("/create/", endpoint="create", methods=["GET", "POST"])
-def create_new_product():
-    if request.method == "GET":
-        return render_template("products/create.html")
-
-    product_name = request.form.get("product_name", "")
-    product_name = product_name.strip()
-    if not product_name:
-        raise BadRequest("`product_name` field required")
-
-    product = crud.create_product(name=product_name)
-    flash(f"Created product {product.name}", category="success")
-    # url = url_for("products_app.list")
-    url = url_for("products_app.details", product_id=product.id)
-    return redirect(url)
 
 
 @products_app.route(
@@ -59,14 +77,20 @@ def create_new_product():
     methods=["GET", "POST"],
 )
 def delete_product(product_id: int):
-    product = crud.get_product_by_id(product_id)
+    product: Product = Product.query.get_or_404(
+        product_id,
+        description=f"Product #{product_id} not found!",
+    )
     if request.method == "GET":
         return render_template(
-            "products/confirm-delete.html",
+            "products/delete.html",
             product=product,
         )
 
-    flash(f"Deleted product {product.name}", category="warning")
-    crud.delete_product(product)
+    product_name = product.name
+    db.session.delete(product)
+    db.session.commit()
+
+    flash(f"Deleted {product_name!r} successfully!", category="warning")
     url = url_for("products_app.list")
     return redirect(url)

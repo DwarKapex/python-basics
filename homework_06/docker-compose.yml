@@ -4,14 +4,14 @@ services:
   pg:
     image: postgres
     environment:
-      POSTGRES_DB: app
+      POSTGRES_DB: shop
       POSTGRES_USER: user
       POSTGRES_PASSWORD: example
       PGDATA: /var/lib/postgresql/data
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U user -d app']
+      test: ['CMD-SHELL', 'pg_isready -U user -d shop']
       timeout: 3s
       interval: 5s
       retries: 5
@@ -40,7 +40,6 @@ services:
         condition: service_healthy
     ports:
       - "5000:5000"
-
 
 volumes:
   db-data:

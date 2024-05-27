@@ -1,53 +1,72 @@
-html {
-    font-size: 20px;
-}
-
-div {
-    font-size: 120%;
+body {
+  background-color: aliceblue;
+  /*font-size: 20px;*/
 }
 
 a {
-    font-size: 21px;
+  /*color: green;*/
+  color: #ff73cc;
 }
 
-/*
-ul > li > a {
+.pretty-link {
   text-decoration: none;
-}
- */
-
-h1 {
-    font-style: italic;
+  font-weight: bold;
+  font-family: '.AppleSystemUIFont', 'Times New Roman', serif;
 }
 
-.product-link {
-    text-decoration: none;
-    font-size: 22px
+.green {
+  color: darkgreen;
 }
 
-#links-block {
-    border: 2px dotted black;
+h1.green {
+  color: #0ba300;
 }
 
-#links-block > a {
-    color: burlywood;
-    /* cursor: none; */
-    text-decoration: none;
+footer.green {
+  color: green;
 }
 
-.text-green {
-    color: green;
+.capitalize {
+  text-transform: capitalize;
 }
 
-.text-bold {
-    font-weight: bold;
+.text-upper-case {
+  text-transform: uppercase;
 }
 
-.d-under {
-    border-bottom: 2px solid black;
+#span-text-clicked-times {
+  font-weight: bolder;
+  text-transform: capitalize;
 }
 
-#click-btn {
-    padding: 2% 4%;
-    font-size: 1.5em;
+#main-header {
+  text-decoration: underline;
+}
+
+
+.push-button {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #04AA6D;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+.push-button:hover {background-color: #3e8e41}
+
+.push-button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.margin-top-md {
+  margin-top: 1em;
 }
