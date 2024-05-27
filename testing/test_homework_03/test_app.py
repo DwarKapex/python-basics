@@ -11,10 +11,12 @@ current_file = Path(__file__).resolve()
 folder_test_homework_0X = current_file.parent
 homework_0X = folder_test_homework_0X.name.replace("test_", "")
 homework_0X_path = folder_test_homework_0X.parent.parent / homework_0X
-dockerfile_path = homework_0X_path / "Dockerfile"
+dockerfile_path = homework_0X_path / "Dockerfile.app"
 
-if not (dockerfile_path.is_file() and len(dockerfile_path.read_text().splitlines()) > 5):
-    pytestmark = pytest.mark.skip("Dockerfile is not ready")
+if not (
+    dockerfile_path.is_file() and len(dockerfile_path.read_text().splitlines()) > 5
+):
+    pytestmark = pytest.mark.skip("Dockerfile.app is not ready")
 
 
 fake = Faker()
@@ -52,7 +54,10 @@ def build_image(docker_client):
 @pytest.fixture
 def run_image(docker_client, build_image):
     from docker.models.containers import Container
-    container: Container = docker_client.containers.run(build_image, detach=True, ports={PORT: LOCAL_PORT})
+
+    container: Container = docker_client.containers.run(
+        build_image, detach=True, ports={PORT: LOCAL_PORT}
+    )
     print("running docker container detached")
     # give some time to for the web app to start
     sleep(1)

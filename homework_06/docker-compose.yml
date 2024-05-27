@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  pg:
+    image: postgres
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: example
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user -d app']
+      timeout: 3s
+      interval: 5s
+      retries: 5
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      pg:
+        condition: service_healthy
+
+  app:
+    build:
+      dockerfile: ./build/Dockerfile.app
+      context: ./
+    environment:
+      SQLALCHEMY_DATABASE_URI: "postresql+psycopg://user:example@pg:5432"
+    entrypoint: ["bash", "entrypoint.sh"]
+    command: ["flask", "run", "--host", "0.0.0.0"]
+    # flask requires SIGINT to stop gracefully
+    # (default stop signal from Compose is SIGTERM)
+    stop_signal: SIGINT
+    depends_on:
+      pg:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+
+
+volumes:
+  db-data:
