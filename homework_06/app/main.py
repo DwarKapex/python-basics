@@ -9,8 +9,6 @@ from models import db
 
 app = Flask(__name__)
 
-# python -c 'import secrets; print(secrets.token_hex())'
-
 app.config.update(
     SECRET_KEY="6fc01f2db60feff0f53537060",
     SQLALCHEMY_DATABASE_URI=config.SQLALCHEMY_DATABASE_URI,
@@ -25,10 +23,6 @@ app.register_blueprint(
 )
 db.init_app(app)
 migrate = Migrate(app, db)
-
-
-# with app.app_context():
-#     db.create_all()
 
 
 @app.get("/", endpoint="index")

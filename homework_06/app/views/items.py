@@ -11,7 +11,6 @@ items_app = Blueprint(
 def get_items_by_ids():
     # items_ids = request.args.getlist("ids", type=int)
     items_ids = request.args.getlist("ids")
-    # print(request.args)
     return {
         "items": items_ids,
         "one_id": request.args.get("ids"),
